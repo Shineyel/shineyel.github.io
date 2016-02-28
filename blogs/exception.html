@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">Exception</h1>
+          <h2 id="project_tagline">2016-02-28 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>
+            <!--?xml version="1.0" encoding="UTF-8" standalone="no"?-->
+        </p>
+        <p><strong><h3>PHP错误级别&amp;配置</h3></strong></p>
+        <p>display_errors = ON/OFF ;开启关闭错误报告</p>
+        <p>定义和用法：</p>
+        <p>error_reporting(E_ALL)&nbsp;设置&nbsp;PHP&nbsp;的报错级别并返回当前级别。</p>
+        <p>或php.ini：error_reporting = E_WARNING &amp; E_NOTICE</p>
+        <p>函数语法：</p>
+        <p>error_reporting(report_level)</p>
+        <p>如果参数 level 未指定，当前报错级别将被返回。下面几项是 level 可能的值：</p>
+        <ul>
+        <li><p>值 常量 描述</p></li>
+        <li><p>1 E_ERROR 致命的运行错误。错误无法恢复，暂停执行脚本。</p></li>
+        <li><p>2 E_WARNING 运行时警告(非致命性错误)。非致命的运行错误，脚本执行不会停止。</p></li>
+        <li><p>4 E_PARSE 编译时解析错误。解析错误只由分析器产生。</p></li>
+        <li><p>8 E_NOTICE 运行时提醒(这些经常是你代码中的bug引起的，也可能是有意的行为造成的。)</p></li>
+        <li><p>16 E_CORE_ERROR PHP启动时初始化过程中的致命错误。</p></li>
+        <li><p>32 E_CORE_WARNING PHP启动时初始化过程中的警告(非致命性错)。</p></li>
+        <li><p>64 E_COMPILE_ERROR 编译时致命性错。这就像由Zend脚本引擎生成了一个E_ERROR。</p></li>
+        <li><p>128 E_COMPILE_WARNING 编译时警告(非致命性错)。这就像由Zend脚本引擎生成了一个E_WARNING警告。</p></li>
+        <li><p>256 E_USER_ERROR 用户自定义的错误消息。这就像由使用PHP函数trigger_error（程序员设置E_ERROR）</p></li>
+        <li><p>512 E_USER_WARNING 用户自定义的警告消息。这就像由使用PHP函数trigger_error（程序员设定的一个E_WARNING警告）</p></li>
+        <li><p>1024 E_USER_NOTICE 用户自定义的提醒消息。这就像一个由使用PHP函数trigger_error（程序员一个E_NOTICE集）</p></li>
+        <li><p>2048 E_STRICT 编码标准化警告。允许PHP建议如何修改代码以确保最佳的互操作性向前兼容性。</p></li>
+        <li><p>4096 E_RECOVERABLE_ERROR 开捕致命错误。这就像一个E_ERROR，但可以通过用户定义的处理捕获（又见set_error_handler（））</p></li>
+        <li><p>8191&nbsp;E_ALL&nbsp;所有的错误和警告(不包括&nbsp;E_STRICT)&nbsp;(E_STRICT&nbsp;will&nbsp;be&nbsp;part&nbsp;of&nbsp;E_ALL&nbsp;as&nbsp;of&nbsp;PHP&nbsp;6.0)</p>
+        <p></li>
+        </ul>
+            <span style="background-color: rgb(255, 250, 165);-evernote-highlight:true;">可以明显的看到，上面是二进制的值。所以，级别之间支持使用 &amp; || ~等逻辑运算！</span>
+        </p>
+        <br>
+        <p><strong><h3>自定义PHP的错误报告处理方式</h3></strong></p>
+        <p>
+            set_error_handler(callback[,error_types = E_ALL | E_STRICT]);
+        </p>
+        <p>
+            function callback($error_type,$error_message,$error_file,$error_line)
+        </p>
+        <p>
+            设置一个用户的函数来处理脚本中出现的错误。不再是系统定义的直接输出，影响界面。
+        </p>
+        <p>
+            此时，php.ini的错误级别error_reporting不再有效，而是由callback函数控制。
+        </p>
+        <p>
+            set_exception_handler(callback)
+        </p>
+        <p>
+            设置默认的异常处理程序，用于没有用try/catch块来捕获的异常。在callback调用后异常会中止。
+        </p>
+        <p><strong><h3>错误日志(文件)</h3></strong></p>
+        <p><h4>错误配置：</h4></p>
+        <ul>
+            <li>
+                <p>log_errors = On/OFF ;日志文件是否开启，</p></li>
+                <p>error_log未开启时，默认写到web服务器(nginx)的错误日志中。每个虚拟机可指定自己的日志。</p>
+                <p>error_log = “php_errors.log&quot; ;Php错误日志文件（指定文件地址）</p>
+                <p>error_log = syslog ;Php错误将会写入到系统日志中</p>
+                <p>log_errors_max_log=1024 ;每个日志项的最大长度</p>
+            </li>
+            <li>
+                <p>脚本中修改配置：ini_set(“display_errors”,”off&quot;);</p>
+                <p>脚本中获取配置：ini_get(“display_errors&quot;);</p>
+                <p>在php文件中使用error_log()函数来记录日志，即可将信息写入error_log指定的日志文件了。</p>
+            </li>
+        </ul>
+        <p><h4>日志文件位置：</h4></p>
+        <ol>
+        <li><p>系统日志</p></li>
+        <li><p>服务器日志(每个虚拟机可能配置不同)</p></li>
+        <li><p>自定义日志文件</p>
+        <li><p><strong>PHP异常（Exception）</strong></p>
+        <p>结构：try{} catch(Exception $e){echo $e-&gt;getMessage();}</p>
+        <p>throw new Exception(“异常&quot;);</p>
+        <p>和Java基本一致，没啥说的。但是<span style="background-color: rgb(255, 250, 165);-evernote-highlight:true;">如何让系统错误，自动异常抛出？</span></p>
+        <p>如下图所示，使用set_error_handler：</p>
+        <p><img style="height: auto;" src="../images/exception_01.jpg" data-en-img-selected="true"/></p>
+        <p>此时，就可以通过第二点：自定义错误的方式，判断不同的error，抛出不同的Exception。</p>
+        <p>输出：</p>
+        <p><img style="height: auto;" src="../images/exception_02.jpg" data-en-img-selected="true"/></p>
+        <p>可见，Warning被handler处理，抛出的Exception，被try catch结构处理了。</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

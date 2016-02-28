@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">Exception</h1>
+          <h2 id="project_tagline">2016-02-28 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><h3>手册知识点：</h3></p>
+        <p><img style="height: auto;" src="../images/smarty_01.jpg" data-en-img-selected="true"/></p>
+        <p><img style="height: auto;" src="../images/smarty_02.jpg" data-en-img-selected="true"/></p>
+        <p>什么是smarty，什么是模板。</p>
+        <p>就是一个模板引擎，当有模板的时候，一些重复的东西即可通过通用类抽离来解决。类似JavaWeb中的Jsp。</p>
+        <h4><p>变量：</p></h4>
+        <ul>
+          <li><p>Php变量：assign函数</p></li>
+          <li><p>配置变量：setConfigDIr，loadConfig | 使用：#config_name#</p></li>
+          <li><p>原生变量：$smarty.now/$smarty.get</p></li>
+          <li><p>模板变量：{assign var=“one” value=“hello”} / {assign “one” “hello”} / {$one = “hello&quot;}</p></li>
+          <li><p>变量使用：{$one}</p></li>
+          <li><p>变量修饰器：（使用smarty模板的函数，虽然tpl也能够解析PHP函数）</p></li>
+          <p>{$var|函数1：参数11：参数12|函数2：参数21}&gt;</p></li>
+          <p>$var会传递给修饰器函数的第一个参数，接下来的参数11、12会作为第二三个参数传递</p>
+          <p>function modify($var,$参数1,$参数2){}</p>
+        </ul>
+
+        <p><h4>流程控制：</h4></p>
+        <ol>
+          <li>
+            <p>IF( ( (a==b) or (c==d) ) &nbsp;and (e==f) ) / 与或非 ( &amp;&amp; || ! )</p>
+            <ul>
+              <li>符号&nbsp; 简写&nbsp; &nbsp; &nbsp;意思</li>
+              <li><p>&nbsp;== &nbsp;&nbsp; eq &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;equals
+              </p></li>
+              <li><p>&nbsp;!= &nbsp; &nbsp; ne,net &nbsp; &nbsp;not equals</p></li>
+              <li><p>&nbsp; &gt; &nbsp; &nbsp; &nbsp;gt &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; greater than</p></li>
+              <li><p>&nbsp;&lt; &nbsp; &nbsp; &nbsp;lt &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;less than</p></li>
+              <li><p>&nbsp;&gt;= &nbsp; &nbsp;gte,ge &nbsp; &nbsp; &nbsp;greater than or equal</p></li>
+              <li><p>&nbsp;&lt;= &nbsp; &nbsp;lte,le &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;less than or equal</p></li>
+              <li><p>&nbsp;! &nbsp; &nbsp; &nbsp; not</p></li>
+              <li><p>&nbsp;% &nbsp; &nbsp; mod</p></li>
+              <li><p>&nbsp;is even &nbsp; &nbsp; &nbsp; &nbsp; 是偶数// if $a%2 is even</p></li>
+            </ul>
+          </li>
+          <li>
+            <p>FOR，FORELSE</p>
+            <p>&nbsp; &nbsp; &nbsp;{for $var=0 to 10 step 2 max=3}//从0到10每步2，最多走3步&nbsp;</p>
+            <p>
+                &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$var}
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {forelse}//
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;条件不成功，没有循环
+            </p>
+            <p>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{/for}&nbsp;
+            </p>
+          </li>
+          <li>
+            <p>
+                WHILE
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp;{while $var lt 10}
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {$var++}
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp;{/while}
+            </p>
+          </li>
+          <li>
+            <p>
+                FOREACH，FOREACHELSE
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp;{foreach $arr as $key=&gt;$value}
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {$value@iteration}=&gt;{$value@iteration}=&gt;{$k}=&gt;{$value}&lt;br&gt;//从1开始
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 数字索引(从0开始)=&gt;第几个(从1开始)=&gt;键=&gt;值
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {if $value@first}//判断是否是第一个循环
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {if $value@first}//判断是否是循环中的最后一个
+            </p>
+            <p>
+                &nbsp; &nbsp;&nbsp; {foreachelse}
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 数组为空或数组不存在
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp;{/foreach}
+            </p>
+            <p>
+                &nbsp; &nbsp; &nbsp;{$value@total}//获得foreach的数组的总数(count)
+            </p>
+          </li>
+        </ol>
+        <p><h4>函数：</h4></p>
+        <p>
+            &lt;{fun_name args1=“a” args2=“b&quot;}&gt;
+        </p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;函数参数会作为key=&gt;value对的数组，传递给函数。
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;function fun($params,$smarty){}
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;其中$params = array(args1=&gt;a,args2=&gt;b)
+        </p>
+        <p>
+            <h4>块函数：</h4>
+        </p>
+        <p>
+            &lt;{fun_name args1=“” args2=“&quot;}&gt;
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;abc
+        </p>
+        <p>
+            &lt;{/fun_name}&gt;
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;function fun($params,$content,$smarty,&amp;$repeat){}
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;其中：content = abc
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;repeat：当前是函数块头：true，还是尾：false。（注意，块函数会被调用两次）
+        </p>
+        <p>&nbsp; &nbsp; &nbsp;嵌套块函数，$smarty-&gt;_tag_stack可以看嵌套的层级。</p>
+        <p>
+            &nbsp; &nbsp;&nbsp; {block}、{include}、{config_load file=‘abc’ section=‘cba&#39;}其实都是内置函数
+        </p>
+        <p><h4>插件拓展smarty：</h4></p>
+        <p>
+            &nbsp; &nbsp;&nbsp; 插件方法定义：registerPlugin(type,name,callback);
+        </p>
+        <p>
+            <img style="height: auto;" src="../images/smarty_03.jpg" data-en-img-selected="true"/>
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;type:定义plugin的类型：”function”函数,”block”函数块,”compiler”,”modifier”(变量修饰器)
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;name:在模板中使用的名字
+        </p>
+        <p>
+            function a($params,$smarty)
+        </p>
+        <p>
+            &lt;data_now format=“%y/%m/%d&quot;&gt;
+        </p>
+        <p>
+            format会作为params的数组子项传递到函数
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;自定义插件类：pluginDir
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 自定路径：$smarty-&gt;setPluginsDir();
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 文件命名规则：modify.函数名.php / function.函数名.php
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 方法命名：function smarty_modifier_myfunc($value,$param) / function smarty_function_myfunc($params,$smarty)
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 参数：第一个参数是修饰器所修饰的变量值，第二个以后才是使用的参数
+        </p>
+        <p><h4>模板继承：</h4></p>
+        <p>
+            &nbsp; &nbsp; &nbsp;父模板中定义了结构，包含一些block，子模板能够继承。
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;{extents &nbsp;} / php中：display(“extends:parent.tpl|child.tpl&quot;)
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;{block name append/prepend}
+        </p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 子模板继承之后能够修改父模板中的block内容，子模板中不再block中的内容是不合法且不显示的。
+        </p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 子模板能够通过关键字append/prepend将内容添加到父模板block的前面或者后面。
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;{smarty.block.parent/child}
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 子模板也能够获得父模板中的内容添加到指定位置。
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 父模板也能指定子模板block内容在父模板的block中的展示位置。
+        </p>
+        <p><h4>静态化：</h4></p>
+        <p>
+            &nbsp; &nbsp; &nbsp;ob_start、ob_flush、ob_clean、ob_get_contents
+        </p>
+        <p><h4>缓存：</h4></p>
+        <p>
+            &nbsp; &nbsp; &nbsp;缓存原理是使用上面的ob静态化函数，
+        </p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;获取融合后的模板php输出的HTML内容生成的HTML文件。
+        </p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当下次请求到达的时候，直接读取HTML文件返回即可，不再需要执行PHP文件了。
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;当然对于动态内容来说，会存在缓存内容。
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;caching、is_cached、cache_time
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;局部不适用缓存&lt;{no cache}&gt;&lt;{/no_cached}&gt;
+        </p>
+        <p>
+            &nbsp; &nbsp; &nbsp;smarty-&gt;clear_cache/clearAllCache
+        </p>
+        <p><h4>使用：</h4></p>
+        <p>
+            init方法，设置一些基本的结构：
+        </p>
+        <p>
+            <img style="height: auto;" src="../images/smarty_04.jpg" data-en-img-selected="true"/>
+        </p>
+        <p>
+            configDir、pluginDir目录下的文件会自动加载。&nbsp;
+        </p>
+        写的一个smarty模板：
+        <p><img style="height: auto;" src="../images/smarty_05.jpg" data-en-img-selected="true"/></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>
