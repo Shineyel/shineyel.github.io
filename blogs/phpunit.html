@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">PHPUnit</h1>
+          <h2 id="project_tagline">2016-02-29 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><h3>使用：</h3></p>
+            <ul class=" list-paddingleft-2">
+                <li>
+                    <p>
+                        你的测试类需要继承TestCase类，实现测试方法。<br/>
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        在你的测试类中，测试方法命名为Test*__，其 将会被自动调用。注意不要重写runTest方法。<br/>
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        setUp和tearDown方法，在测试类/方法被调用前和调用后触发。<br/>
+                        当你测试类中有比较大的资源时，比如sockets或者File相关，可以先在setUp方法里面初始化。
+                    </p>
+                </li>
+            </ul>
+<h4>setUp和tearDown</h4></span>
+<p>setUp和tearDown可以帮助我们搭建和清理测试环境，TestCase和TestSuite两个类均有这对函数，可以共用户重载。但是，需要注意这两对函数调用的时机不一样，在TestCase中，每一次test***方法调用前均会调用setUp方法，调用后均会调用tearDown方法。但是，在TestSuite中，只会在第一个testCase调用之前调用setup，最后一个testCase调用后，调用tearDown。可以通过下面的例子，了解整个调用过程。</p>
+<p>
+    <img style="height: auto;" src="../images/phpunit_01.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    <strong><span style="font-family: Verdana, Arial, Helvetica, sans-serif;"><br/></span></strong>
+</p>
+<p><h3>命名约定</h3></p>
+<p>
+    <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">PHPUnit中默认的命令规则，可以使得运行测试用例变得十分方便。列举如下：</span>
+</p>
+<ul  class=" list-paddingleft-2">
+        <li>
+            <p>
+                <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">自动执行每个TestCase类中test***形式的方法</span>
+            </p>
+        </li>
+        <li>
+            <p>
+                <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">自动执行目录下*Test.php形式命名中的用例</span>
+            </p>
+        </li>
+        <li>
+            <p>phpunit也可以默认的执行指定目录(需要指定目录)下*Test.php文件中的测试用例，并且是迭代的遍历所有子目录，
+            </p>
+        </li>
+</ul>
+<p>
+    一旦遵守了这些命名约定，编写单元测试将会更加便捷。
+</p>
+<p>
+    <h3>框架结构</h3>
+    PHPUnit使用了组合模式：
+</p>
+<p>
+    <img style="height: auto;" src="../images/phpunit_02.jpg" data-en-img-selected="true"/>
+</p>
+<p>使用Test作为统一的接口， TestCase是测试用用例，继承于Assert，这样可以方便的调用Assert中的各种断言函数。TestSuite，是一个Test的集合，他可以包含任意的TestCase或TestSuite。这样设计的好处不言而喻——方便的组织测试用例和测试套件，客户代码不必关执行的是单个测试用例还是一整套测试套件或是更为复杂的测试用例树。
+</p>
+<p>参考：<a href="http://www.cnblogs.com/bourneli/archive/2012/04/27/2474005.html">http://www.cnblogs.com/bourneli/archive/2012/04/27/2474005.html</a>
+</p>
+<p>
+    <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">TestSuite的组织：</span>
+</p>
+<p>
+    <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">1） 测试套件类集成与PHPUnit_Framework_TestSuite类；</span>
+</p>
+<p>
+    <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">2） 测试套件类必须实现public static function suite(){/*必须返回测试套件对象*/}接口；</span>
+</p>
+<p>
+    <span style="font-family: Verdana, Arial, Helvetica, sans-serif;">3） 通过addTestSuite(‘Test Case Class Name’)，将具体的测试用例添加到测试套件中。</span>
+</p>
+<p>
+    如果在真实的项目中，可以以模块为单位组织测试套件。如过模块过大，可以在模块内部继续划分测试套件，这样，形成一个树装结构，需要运行那部分测试用例，只需要敲入一行命令“phpunit XXXXTestSuite.php”,就可以轻松执行（上面的代码见附件）。合理的使用测试套件，可以简洁有效的组织所有测试用例。
+</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">Git基础</h1>
+          <h2 id="project_tagline">2016-02-29 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>参考书目：Pro Git 2</p>
+<p>
+    <h3>Git代码的工作区域：</h3>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;working(工作目录)、staging(暂存区)、repository(代码仓库)
+</p>
+<p>
+    <img style="height: auto;" src="../images/git_base_01.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    安装：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;mac下直接brew即可。
+</p>
+<p>
+    <h3>基本配置：</h3>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;配置目录：
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <span style="text-decoration:underline;">/etc/gitconfig</span>：所有用户的配置。git config - -system
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <span style="text-decoration:underline;">~/.gitconfig</span>：当前用户的配置。git config - -global
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <span style="text-decoration:underline;">path/.git/config</span>：当前目录的配置。相同配置项，下级会覆盖上级。
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可以使用：git config命令配置属性（<span style="text-decoration:underline;">git config - -list</span>查看当前配置信息，当有重复项时，下面的覆盖上面的）
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 用户名：git config - -global user.name shine
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 邮箱：git config - - global user.email <a href="mailto:ihuangshuai@gmail.com">ihuangshuai@gmail.com</a>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 文本编辑器：git config - -global core.editor vim
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 冲突时，差异分析工具：git config - -global merge.tool vimdiff
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;帮助：<span style="text-decoration:underline;">git help [cmd]</span>。如git help config
+</p>
+<p>
+    <h3>开始一个git仓库：</h3>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;1.初始化
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="text-decoration:underline;">git init</span>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;2.clone已有(<span style="text-decoration:underline;">git clone [url]</span>)
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 支持git、http(s)等等协议
+</p>
+<p><h3>文件状态：</h3></p>
+<p>
+    &nbsp; &nbsp;&nbsp; 未跟踪(untracked)、未修改(unmodified)、已修改(modified)、已暂存(staged)、仓库(repertory)
+</p>
+<p>
+    <img style="height: auto;" src="../images/git_base_02.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    <span style="text-decoration:underline;">git add file</span>（多功能命令）
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;开始跟踪新文件、把已跟踪的文件放到暂存区、合并时把冲突文件标记为已解决
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;一个文件可能同时存在to be commit 和 modified区域。因为每次add命令都会暂存当时的版本。下次的修改算是另外一个版本，需要重新add。
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;在git中，目录不再纳入版本控制，即所有文件是包含了目录的！
+</p>
+<p>
+    <span style="text-decoration:underline;">git status</span>：查看当前目录文件状态
+</p>
+<p>
+    <img style="height: auto;" src="../images/git_base_03.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    <span style="text-decoration:underline;">git diff [file]</span>：比较已暂存和未暂存的文件的区别。即暂存前后的区别
+</p>
+<p>
+    <span style="text-decoration:underline;">git diff - -{cached,staged} [file]</span>：比较暂存区和库中的文件区别。即提交前后的区别。注意，flag:cached放在文件之前。
+</p>
+<p>
+    <img style="height: auto;" src="../images/git_base_04.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    <span style="text-decoration:underline;">git commit [-m “comment”]</span>：提交代码到repertory代码库，无-m时，启动编辑器(config里面的core.editor可指定)编辑注释。与svn类似。
+</p>
+<p>
+    <img style="height: auto;" src="../images/git_base_05.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    git commit -a [-m ‘comment’]：(<strong>已跟踪</strong>)跳过暂存区，直接提交。即提交<strong>暂存区</strong>和<strong>修改区</strong>的文件。<strong>不可指定单独一个文件！！！</strong>
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;但是未追踪的文件无法一次提交。至少需要add一次。
+</p>
+<p>
+    .gitignore文件：忽略一些文件，不需要git管理，不进入未跟踪文件列表。如日志编译等自动生成文件。
+</p>
+<p>
+    文件格式规范：
+</p>
+<ul style="font-family:&#39;Helvetica Neue&#39;;" class=" list-paddingleft-2">
+    <li>
+        <p>
+            注释：#开头
+        </p>
+    </li>
+    <li>
+        <p>
+            可使用glob模式匹配
+        </p>
+    </li>
+    <li>
+        <p>
+            匹配模式最后跟反斜杠(/)说明要忽略的是目录，如：build/ #忽略build/目录下的所有文件
+        </p>
+    </li>
+    <li>
+        <p>
+            模式前加(!)取反
+        </p>
+    </li>
+</ul>
+<p>
+    <span style="text-decoration:underline;">git rm [file]</span>：移除文件
+</p>
+<p>
+    工作目录和版本库中的均删除：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">rm a.php</span> //先删除本地文件
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git rm a.php</span> //删除版本库中文件
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git commit -m ‘rm a.php’ a.php</span> //提交删除，若删除之前修改过并已放到暂存区域的话，则必须要用强制删除-f。
+</p>
+<p>
+    仅仅从版本库中删除，保留工作目录文件：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git rm - -cached file</span>：可使用glob模式。如：git rm \*~：反斜杠是不使用glob模式，而是git自带的模式，其中*表示<span style="text-decoration:underline;"><strong>递归</strong></span>匹配所有
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git commit -m ‘rm file’ file</span>：需要提交
+</p>
+<p>
+    git commit - -amend -m ‘comment&#39;：修改上一次提交，即把缓存区的内容添加到此次提交（合并为一个提交）
+</p>
+<p>
+    <span style="text-decoration:underline;"><br/></span>
+</p>
+<p>
+    <span style="text-decoration:underline;">git mv from to</span>：移动文件
+</p>
+<p>
+    类似运行如下三个命令，当执行完下面三个操作之后，git会自动识别出来是一次rename操作：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;mv from to
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;git rm from
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;git add to
+</p>
+<p>
+    <h3>日志</h3>
+</p>
+<p>
+    <span style="text-decoration:underline;">git log</span>：查看提交历史：
+</p>
+<p>
+    选项：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;-p：显示每次提交具体的文件修改内容。
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;- - stat：仅显示简要的增改行数统计
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;- - pretty：指定展示格式，
+</p>
+<p>
+    &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如：oneline(每次提交展示一行)，short()，full()，fuller()，
+</p>
+<p>
+    format：自定义展示的记录格式，方便后期提取分析，git log - -pretty=format:”%h - %an,%ar : %s&quot;
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%H：提交对象(commit)的完整哈希字串
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%h：提交对象的尖端哈希字串
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%an：修改者名
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%ae：修改者者邮箱
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%ad：修改时期(可使用-date=选项定制格式)
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%cn：提交者名
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%ce：提交者邮箱
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%cr：提交日期
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;%s：提交说明
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 提交者和修改者的区别：修改者是修改文件的人，而提交者是将修改合并入项目(主干)的人。
+</p>
+<p>
+    限制&amp;检索：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;-&lt;n&gt;：如：-2，显示最近的两次更新
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;- - since/until：如，git log - -since=2.weeks
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;- -author
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;- -grep
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;- -all-match：符合检索条件
+</p>
+<p>
+    <strong>路径和选项中间要用- -，隔开。</strong>
+</p>
+<p><h3>撤销：</h3></p>
+<p>
+    撤销暂存区内容：<span style="text-decoration:underline;">git reset HEAD e.php</span> （git status中有介绍）
+</p>
+<p>
+    撤销对文件的修改(修改之前的版本)：<span style="text-decoration:underline;">git checkoup - - &lt;file&gt;</span>
+</p>
+<p><h3>远程库：</h3></p>
+<p>
+    <span style="text-decoration:underline;">git remote</span>：展示远程库的名称，-v：展示远程库对应的地址。每个git目录维持了一个git远程库的name=&gt;url映射表，当需要操作的时候，直接在命令后面接对应的name即可操作对应的库。而不再需要输入长串的url。
+</p>
+<p>
+    <span style="text-decoration:underline;">git remote add [shortname] [url]</span>：添加远程仓库
+</p>
+<p>
+    <span style="text-decoration:underline;">git remote show [remote-name]</span>：查看远程仓库信息
+</p>
+<p>
+    <span style="text-decoration:underline;">git remote rename old-name new-name</span>：重命名
+</p>
+<p>
+    <span style="text-decoration:underline;">git remote rm remote-name</span>：删除
+</p>
+<p>
+    远程代码：
+</p>
+<p>
+    <span style="text-decoration:underline;">git fetch [remote-name]</span>：只是将远端数据拉到本地仓库，并<strong>不自动合并到当前工作分支！</strong>
+</p>
+<p>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;从远程仓库中拉取所有你本地仓库中还没有的数据。之后你就可以在本地访问该远程仓库中的所有分支。
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;如果工作目录是一个clone，则fetch会自动将远程仓库归于origin。即别人的更新。
+</p>
+<p>
+    <span style="text-decoration:underline;">git pull</span>：&nbsp;
+</p>
+<p>
+    <span style="text-decoration:underline;">git push [remote-name] [branch-name]</span>：如：git push origin master
+</p>
+<p>
+    <h3>标签：</h3>
+</p>
+<p>
+    <span style="text-decoration:underline;">git tag</span>：查看标签名字。
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;轻量级(lightweight)：指向特定提交对象的引用
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;含附注的(annotated)：存储在仓库中的独立对象，有自身的校验和信息，包含着标签的名字，邮件、地址、日期、标签说明。
+</p>
+<p>
+    <span style="text-decoration:underline;">git tag tag-name</span>：轻量级标签。
+</p>
+<p>
+    <span style="text-decoration:underline;">git tag -a tag-name [-m ‘content’]</span>：添加附注的标签。
+</p>
+<p>
+    <span style="text-decoration:underline;">git show [tag-name]</span>：展示标签信息。
+</p>
+<p>
+    <span style="text-decoration:underline;">git tag -s tag-name -m&nbsp;‘content’</span>：签署标签用你的私钥签署标签。
+</p>
+<p>
+    <span style="text-decoration:underline;">git tag -v tag-name</span>：验证标签，当有签署者的公钥放在keyring中才能验证
+</p>
+<p>
+    <span style="text-decoration:underline;">git tag -a tag-name SHA-1校验和（或前几位字符）</span>：可通过git log - -pretty=oneline获取校验和
+</p>
+<p>
+    <span style="text-decoration:underline;">git push origin [tagname]</span>：将标签推送到服务器端。git push不会推送标签。加上- -tags就会一次推送本地所有标签。
+</p>
+<p><h3>小技巧：</h3></p>
+<p>
+    1.git自动提示(shell中的双Tab一样)：
+</p>
+<p>
+    如果你用的是 Bash shell,可以试试看 Git 提供的自动完成脚本。下载 Git 的源 代 码, 进 入 contrib/ completion 目 录, 会 看 到 一 个 git-completion.bash 文 件。 将 此 文件复制到你自己的用户主目录中(译注:按照下面的示例,还应改名加上点:cp git- completion.bash ∼/.git-completion.bash),并把下面一行内容添加到你的 .bashrc 文 件中:
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;"><em>source ~/.git-completion.bash</em></span>
+</p>
+<p>
+    <span style="font-family: UMingCN;">也可以为系统上所有用户都设置默认使用此脚本。Mac 上将此脚本复制到</span> <span style="font-family: UKaiCN;">/opt/local/ etc/bash_completion.d</span> <span style="font-family: UMingCN;">目录中,Linux 上则复制到</span> <span style="font-family: UKaiCN;">/etc/bash_completion.d/</span> <span style="font-family: UMingCN;">目录中即 可。这两处目录中的脚本,都会在 Bash 启动时自动加载。</span>
+</p>
+<p>
+    2.git命令别名
+</p>
+<p>
+    git别名替换：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.co checkout</span>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.br branch</span>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.ci commit</span>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.st status</span>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.unstage ‘reset HEAD --&#39;</span>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.last ‘log -1 HEAD&#39;</span>
+</p>
+<p>
+    git调用外部命令：在命令前加上！即可：
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp;<span style="text-decoration:underline;">git config - -global alias.visual ‘!gitk&#39;</span>
+</p>
+<p>
+    <br/>
+</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>
