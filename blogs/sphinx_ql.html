@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">SphinxQL</h1>
+          <h2 id="project_tagline">2016-03-1 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>没有Markdown解析，完全无法看，明天优化一下</p>
+        <h1>SphinxQL</h1>
+        <h2>目录</h2>
+<ol>
+<li>SELECT（搜索查询）语法</li>
+<li>SHOW META（显示查询状态信息）语法</li>
+<li>SHOW WARNINGS（显示查询警告信息）语法</li>
+<li>SHOW STATUS（显示服务端状态信息）语法</li>
+<li>INSERT 和 REPLACE（数据插入和替换）语法</li>
+<li>DELETE（数据删除）语法</li>
+<li>SET（设置服务端变量）语法</li>
+<li>BEGIN, COMMIT, 以及 ROLLBACK（事务处理）语法</li>
+<li>CALL SNIPPETS（摘要生成）语法</li>
+<li>CALL KEYWORDS（关键词生成）语法</li>
+<li>SHOW TABLES（显示当前提供搜索服务的索引列表）语法</li>
+<li>DESCRIBE（显示指定搜索服务索引的字段信息）语法</li>
+<li>CREATE FUNCTION（添加自定义函数）语法</li>
+<li>DROP FUNCTION（删除自定义函数）语法</li>
+<li>SHOW VARIABLES（显示服务器端变量）语法</li>
+<li>SHOW COLLATION（显示字符集校对）语法</li>
+<li>UPDATE（数据更新）语法</li>
+<li>多结果集查询（批量查询）</li>
+<li>COMMIT（注释）语法</li>
+<li>SphinxQL 保留关键字列表</li>
+<li>SphinxQL 升级备注, version 2.0.1-beta</li>
+</ol>
+
+<h3>Select（搜索语法）</h3>
+
+<p>SELECT
+    select_expr [, select_expr ...]
+    FROM index [, index2 ...]
+    [WHERE where_condition]
+    [GROUP [N] BY {col_name | expr_alias} [, {col_name | expr_alias}]]
+    [WITHIN GROUP ORDER BY {col_name | expr_alias} {ASC | DESC}]
+    [HAVING having_condition]
+    [ORDER BY {col_name | expr_alias} {ASC | DESC} [, ...]]
+    [LIMIT [offset,] row_count]
+    [OPTION opt_name = opt_value [, ...]]
+    [FACET facet_options[ FACET facet_options][ ...]]</p>
+
+<h4>select_expr</h4>
+
+<p>fields可以是列名、任意表达式以及<em>号，<font color="#FF0000">与常规SQL不同在于，表达式必须用一个AS别名来标识</font>
+如：SELECT @id, group_id</em>123+456 AS expr1 FROM test1
+从2.0.1测试版本开始AS是可选的。
+<font color="#FF0000">EXIST()函数</font>，从2.1.1版本开始可以使用，如EXIST(“attr-name”,default-value)，当指定的attr-name为空的时候，使用默认值代替。这个功能在某些地方是十分好用的，比如搜索几个索引，而每个索引还不一致：
+如：SELECT *, EXIST('gid', 6) as cnd FROM i1, i2 WHERE cnd>5
+SNIPPET()函数</p>
+
+<h4>from</h4>
+
+<p>from语句应该使用索引列表中的项，不同于常规的SQL语句，逗号在from语句中表示全文索引的枚举，与Query()的调用类似。而不再是常规的JOIN操作。</p>
+
+<h4>where</h4>
+
+<p>这个语句中的元素都会映射到全文查询和过滤器。
+比较运算符(=，!，=，&lt;，>，&lt;=，>=)，IN，AND，NOT，BETWEENT语句都是支持的或者被映射为了一个过滤器来实现，<font color="#FF0000">OR暂时不支持</font>，但是将来会支持。<font color="#FF0000">Match(“查询”)</font>是支持的，该语句作为一个全文检索来实现。Query函数将被解释为全文检索，where子句中，最多有一个Match()语句。</p>
+
+<h4>group by</h4>
+
+<p>支持多个值或者表达式的group by：</p>
+
+<p>SELECT *, group_id*1000+article_type AS gkey FROM example GROUP BY gkey</p>
+
+<p>SELECT id FROM products GROUP BY region, price
+支持聚合函数：(AVG(), MIN(), MAX(), SUM())，聚合函数的参数可以是普通的属性或者任意的表达式。
+count(*)在group by中被隐含支持，结果在@count列中。
+支持COUNT(DISTINCT attr)，但是一个语句最多一个COUNT(DISTINCT attr)，且参数必须是一个属性。这两个限制在将来可能会取消。从2.0.1开始，group by支持String类型。
+如：</p>
+
+<p>SELECT *, AVG(price) AS avgprice, COUNT(DISTINCT storeid) 
+ FROM products 
+ WHERE MATCH('ipod')
+ GROUP BY vendorid
+GROUPBY()函数是支持的，该函数返回GROUPBY键。当GROUPBY一个MVA值的时候，为了选择当前组的特殊的值。
+如：</p>
+
+<p>SELECT *, AVG(price) AS avgprice, COUNT(DISTINCT storeid), GROUPBY()
+ FROM products
+ WHERE MATCH('ipod')
+ GROUP BY vendorid
+从2.2.1开始，可以选择<font color="#FF0000">每个group中的topN</font>数据：</p>
+
+<p>如：SELECT id FROM products GROUP 3 BY category 
+ 如：SELECT group_id, MAX(id) AS max_id
+  FROM my_index WHERE MATCH('the')
+  GROUP BY group_id ORDER BY max_id DESC</p>
+
+<p>GROUP_CONCAT()函数，将group中的某个值，用逗号分隔之后，展示出来。
+SELECT id, GROUP_CONCAT(price) as pricesList, GROUPBY() AS name FROM shops GROUP BY shopName;</p>
+
+<h4>WITHIN GROUP ORDER BY</h4>
+
+<p>在一个group by中，选出该group中的最佳“行”，不是一个group为一行。
+如：</p>
+
+<p>SELECT *, INTERVAL(posted,NOW()-7*86400,NOW()-86400) AS timeseg
+ FROM example WHERE MATCH('my search query')
+ GROUP BY siteid
+ WITHIN GROUP ORDER BY @weight DESC
+ ORDER BY timeseg DESC, @weight DESC</p>
+
+<p>SELECT *, INTERVAL(posted,NOW()-7*86400,NOW()-86400) AS timeseg, WEIGHT() AS w
+ FROM example WHERE MATCH('my search query')
+ GROUP BY siteid
+ WITHIN GROUP ORDER BY w DESC
+ ORDER BY timeseg DESC, w DESC</p>
+
+<h4>ORDER BY</h4>
+
+<p>ORDER BY的参数只能是列名（不能是表达式），但是可以计算之后别名来排序：</p>
+
+<p>如：SELECT *, @weight<em>10+docboost AS skey FROM example ORDER BY key
+ SELECT *, WEIGHT()</em>10+docboost AS skey FROM example ORDER BY skey
+2.0.1之后，支持string类型
+2.1.1之后，能够进行子查询。</p>
+
+<p>SELECT id,a_slow_[removed]) AS cond FROM an_index ORDER BY id ASC, cond DESC LIMIT 100;
+上面语句比下面要好，因为上面语句，慢表达式将会被过滤，而下面的过滤仅仅会针对部分集合。</p>
+
+<p>SELECT * FROM (SELECT id,a_slow_[removed]) AS cond FROM an_index ORDER BY id ASC LIMIT 100) ORDER BY cond DESC;</p>
+
+<h4>HAVING(2.2.1)</h4>
+
+<p>用来过滤GROUP BY的结果集。当前仅仅支持一个过滤条件</p>
+
+<p>SELECT id FROM plain GROUP BY title HAVING group_id=16;
+ SELECT id FROM plain GROUP BY attribute HAVING COUNT(*)>1;</p>
+
+<h4>LIMIT</h4>
+
+<p>LIMIT N和LIMIT M,N两种方式都是支持的。与常规的SQL不同，sphinx默认加上了一个LIMIT 0,20。
+OPTION
+这个是Sphinx特定的拓展，可以让你控制每个SQL语句的选项：
+支持的Option以及对应的值如下：</p>
+
+<p>'ranker' - any of 'proximity_bm25', 'bm25', 'none', 'wordcount', 'proximity', 'matchany', or 'fieldmask'
+ 'max_matches' - integer (每个查询的最大matches值)
+ 'cutoff' - integer (最大的found matches阀值)
+ 'max_query_time' - integer (最次查询大的搜索时间, msec)
+ 'retry_count' - integer (distributed retries count，分布式重试次数)
+ 'retry_delay' - integer (distributed retry delay, msec，分布式重试时间)
+ 'field_weights' - a named integer list (per-field user weights for ranking，每个字段的用户权重排名)
+ 'index_weights' - a named integer list (per-index user weights for ranking，每个索引的用户权重排)
+ 'reverse_scan' - 0 or 1, lets you control the order in which full-scan query processes the rows，让你能够控制全扫描搜索中行的处理顺序。
+如：</p>
+
+<p>SELECT * FROM test WHERE MATCH('@title hello @body world')
+ OPTION ranker=bm25, max_matches=3000,
+ field_weights=(title=10, body=3)</p>
+
+<h4>FACET</h4>
+
+<h3>INSERT &amp; REPLACE syntax（插入和替换）语法</h3>
+
+<p>语句：{INSERT | REPLACE} INTO index [(column, ...)]
+    VALUES (value, ...)
+    [, (...)]
+该语句仅仅针对<font color="#FF0000">RT索引(实时索引)</font>有效，在一个已经存在的索引里插入指定的数据。
+必须有ID，多个ID时，请使用REPLACE。REPLACE和INSERT基本一致，但是当一个ID已经存在的时候，会先删除老的，然后再INSERT新的数据。
+Index是需要insert的索引名称。而(value,…)列表可以指定需要插入的数据，其他的value将会被默认值填充。（0或空string）
+暂时不支持表达式，value值需要指定。
+多行插入也能使用一个单一的INSERT语句，通过使用逗号分隔的，圆括号闭合的多value值。</p>
+
+<h3>DELETE语句（数据删除）语法</h3>
+
+<p>语句：DELETE FROM index WHERE where_condition
+DELETE语句仅仅支持<font color="#FF0000">RT索引（实时索引）</font>或者是以实时索引作为分布式的代理？
+该语句通过ID在索引中删除一个存在的行。
+index表示需要操作的索引。
+where子句和select子句中的where一致。
+举例：</p>
+
+<p>mysql> select * from rt;
++------+------+-------------+------+
+| id   | gid  | mva1        | mva2 |
++------+------+-------------+------+
+|  100 | 1000 | 100,201     | 100  |
+|  101 | 1001 | 101,202     | 101  |
+|  102 | 1002 | 102,203     | 102  |
+|  103 | 1003 | 103,204     | 103  |
+|  104 | 1004 | 104,204,205 | 104  |
+|  105 | 1005 | 105,206     | 105  |
+|  106 | 1006 | 106,207     | 106  |
+|  107 | 1007 | 107,208     | 107  |
++------+------+-------------+------+
+8 rows in set (0.00 sec)</p>
+
+<p>mysql> delete from rt where match ('dumy') and mva1>206;
+Query OK, 2 rows affected (0.00 sec)</p>
+
+<p>mysql> select * from rt;
++------+------+-------------+------+
+| id   | gid  | mva1        | mva2 |
++------+------+-------------+------+
+|  100 | 1000 | 100,201     | 100  |
+|  101 | 1001 | 101,202     | 101  |
+|  102 | 1002 | 102,203     | 102  |
+|  103 | 1003 | 103,204     | 103  |
+|  104 | 1004 | 104,204,205 | 104  |
+|  105 | 1005 | 105,206     | 105  |
++------+------+-------------+------+
+6 rows in set (0.00 sec)</p>
+
+<p>mysql> delete from rt where id in (100,104,105);
+Query OK, 3 rows affected (0.01 sec)</p>
+
+<p>mysql> select * from rt;
++------+------+---------+------+
+| id   | gid  | mva1    | mva2 |
++------+------+---------+------+
+|  101 | 1001 | 101,202 | 101  |
+|  102 | 1002 | 102,203 | 102  |
+|  103 | 1003 | 103,204 | 103  |
++------+------+---------+------+
+3 rows in set (0.00 sec)</p>
+
+<p>mysql> delete from rt where mva1 in (102,204);
+Query OK, 2 rows affected (0.01 sec)</p>
+
+<p>mysql> select * from rt;
++------+------+---------+------+
+| id   | gid  | mva1    | mva2 |
++------+------+---------+------+
+|  101 | 1001 | 101,202 | 101  |
++------+------+---------+------+
+1 row in set (0.00 sec)</p>
+
+<h3>事物</h3>
+
+<p>START TRANSACTION | BEGIN
+ COMMIT
+ ROLLBACK
+ SET AUTOCOMMIT = {0 | 1}
+BEGIN或者START TRANSACTION语句开始一个事物，COMMIT提交当前的事物，使改变永久化。ROLLBACK回滚当前的事物，取消其变化。
+SET AUTOCOMMIT在当前session中控制自动提交模式。自动提交默认为1，即在任何索引中每个修改语句(insert replace等等)语句，都会被一个BEGIN和COMMIT包含。</p>
+
+<h3>UPDATE语句（数据更新）语法</h3>
+
+<p>语句：UPDATE index SET col1 = newval1 [, ...] WHERE where_condition [OPTION opt_name = opt_value [, …]]
+UPDATE语句支持多个属性和值，无论是<font color="#FF0000">RT索引还是硬盘索引</font>，都支持！
+从2.0.2版本开始，所有的属性类型(int,bigint,float,<font color="#FF0000">MVA</font>)，除了string和json属性，都能够被自动更新。
+where子句和select中的where子句一致。
+注意：当更新一个32bits的属性时，系统将会强制截取值的低32位作为值。
+MVA类型的值需要用在圆括号中以逗号分隔。如果需要清除MVA值，仅仅需要使用()值覆盖即可。(MVA是一个标签属性，即逗号分隔，如campaign中的join_theme)
+从2.2.1开始，UPDATE语句能够更新JSON数组中的Int和float值（不支持string,arrays和其他类型）</p>
+
+<p>mysql> UPDATE myindex SET enabled=0 WHERE id=123;
+Query OK, 1 rows affected (0.00 sec)</p>
+
+<p>mysql> UPDATE myindex
+  SET bigattr=-100000000000,
+    fattr=3465.23,
+    mvattr1=(3,6,4),
+    mvattr2=()
+  WHERE MATCH('hehe') AND enabled=1;
+Query OK, 148 rows affected (0.01 sec)</p>
+
+<h4>OPTION子句</h4>
+
+<p>这是一个Sphinx特有的子句，用来控制每个update子句的选项，句式如下：</p>
+
+<p>OPTION <optionname>=<value> [ , ... ]
+基本和SELECT中的OPTION类似，下面几个选项是UPDATE语句独有的：</p>
+
+<p>'ignore_nonexistent_columns' - this option, added in version 2.1.1-beta, points that the update will silently ignore any warnings about trying to update a column which is not exists in current index schema.
+ 'strict' - this option is used while updating JSON attributes. As of 2.2.1-beta, it's possible to update just some types in JSON. And if you try to update, for example, array type you'll get error with 'strict' option on and warning otherwise.</p>
+
+<h3>多语句查询（批量查询）</h3>
+
+<p>&lt;?php
+ $link = mysqli_connect ( "127.0.0.1", "root", "", "", 9306 );
+ if ( mysqli_connect_errno() )
+    die ( "connect failed: " . mysqli_connect_error() );</p>
+
+<p>$batch = "SELECT * FROM test1 ORDER BY group_id ASC;";
+ $batch .= "SELECT * FROM test1 ORDER BY group_id DESC";</p>
+
+<p>if ( !mysqli_multi_query ( $link, $batch ) )
+    die ( "query failed" );</p>
+
+<pre><code>do
+{
+// fetch and print result set
+if ( $result = mysqli_store_result($link) )
+{
+    while ( $row = mysqli_fetch_row($result) )
+        printf ( "id=%s\n", $row[0] );
+    mysqli_free_result($result);
+}
+
+// print divider
+if ( mysqli_more_results($link) )
+    printf ( "------\n" );
+
+    } while ( mysqli_next_result($link) );
+</code></pre>
+
+<p>Its output with the sample test1 index included with Sphinx is as follows.</p>
+
+<p>$ php test_multi.php</p>
+
+<p>id=1
+ id=2
+ id=3
+ id=4</p>
+
+<hr />
+
+<p>id=3
+ id=4
+ id=1
+ id=2</p>
+
+<h3>SHOW META</h3>
+
+<p>展示上一次搜索执行的一些额外信息，比如搜索时间以及关键词统计数据等等。只有当searchd以iostats和- -cpustats开启的时候，才会在show meta中展示。</p>
+
+<p>mysql> SELECT * FROM test1 WHERE MATCH('test|one|two');
++------+--------+----------+------------+
+| id   | weight | group_id | date_added |
++------+--------+----------+------------+
+|    1 |   3563 |      456 | 1231721236 |
+|    2 |   2563 |      123 | 1231721236 |
+|    4 |   1480 |        2 | 1231721236 |
++------+--------+----------+------------+
+3 rows in set (0.01 sec)</p>
+
+<p>mysql> SHOW META;
++-----------------------+-------+
+| Variable_name         | Value |
++-----------------------+-------+
+| total                      | 3     |
+| total_found           | 3     |
+| time                      | 0.005 |
+| keyword[0]            | test  |
+| docs[0]                 | 3     |
+| hits[0]                   | 5     |
+| keyword[1]           | one   |
+| docs[1]                 | 1     |
+| hits[1]                   | 2     |
+| keyword[2]           | two   |
+| docs[2]                 | 1     |
+| hits[2]                   | 2     |
+| cpu_time              | 0.350 |
+| io_read_time        | 0.004 |
+| io_read_ops         | 2     |
+| io_read_kbytes     | 0.4   |
+| io_write_time        | 0.000 |
+| io_write_ops         | 0     |
+| io_write_kbytes    | 0.0   |
+| agents_cpu_time       | 0.000 |
+| agent_io_read_time    | 0.000 |
+| agent_io_read_ops     | 0     |
+| agent_io_read_kbytes  | 0.0   |
+| agent_io_write_time   | 0.000 |
+| agent_io_write_ops    | 0     |
+| agent_io_write_kbytes | 0.0   |
++-----------------------+-------+
+12 rows in set (0.00 sec)</p>
+
+<p>在2.1.1版本以后，还可以使用Like语句：</p>
+
+<p>mysql> SHOW META LIKE 'total%';
++-----------------------+-------+
+| Variable_name         | Value |
++-----------------------+-------+
+| total                 | 3     |
+| total_found           | 3     |
++-----------------------+-------+
+2 rows in set (0.00 sec)</p>
+
+<p>SHOW WARNINGS syntax
+可以获取上一次query语句产生的warning语句，错误信息也会一道返回。</p>
+
+<p>mysql> SELECT * FROM test1 WHERE MATCH('@@title hello') \G
+ERROR 1064 (42000): index test1: syntax error, unexpected TOK_FIELDLIMIT
+near '@title hello'</p>
+
+<p>mysql> SELECT * FROM test1 WHERE MATCH('@title -hello') \G
+ERROR 1064 (42000): index test1: query is non-computable (single NOT operator)</p>
+
+<p>mysql> SELECT * FROM test1 WHERE MATCH('"test doc"/3') \G
+*************************** 1. row ***************************
+        id: 4
+    weight: 2500
+  group_id: 2
+date_added: 1231721236
+1 row in set, 1 warning (0.00 sec)</p>
+
+<p>mysql> SHOW WARNINGS \G
+*************************** 1. row ***************************
+  Level: warning
+   Code: 1000
+Message: quorum threshold too high (words=2, thresh=3); replacing quorum operator
+         with AND operator
+1 row in set (0.00 sec)</p>
+
+<p>SHOW STATUS syntax
+2.1.1之后，也可以使用like%语句了。</p>
+
+<p>mysql> SHOW STATUS;
++--------------------+-------+
+| Counter            | Value |
++--------------------+-------+
+| uptime             | 216   |
+| connections        | 3     |
+| maxed_out          | 0     |
+| command_search     | 0     |
+| command_excerpt    | 0     |
+| command_update     | 0     |
+| command_keywords   | 0     |
+| command_persist    | 0     |
+| command_status     | 0     |
+| agent_connect      | 0     |
+| agent_retry        | 0     |
+| queries            | 10    |
+| dist_queries       | 0     |
+| query_wall         | 0.075 |
+| query_cpu          | OFF   |
+| dist_wall          | 0.000 |
+| dist_local         | 0.000 |
+| dist_wait          | 0.000 |
+| query_reads        | OFF   |
+| query_readkb       | OFF   |
+| query_readtime     | OFF   |
+| avg_query_wall     | 0.007 |
+| avg_query_cpu      | OFF   |
+| avg_dist_wall      | 0.000 |
+| avg_dist_local     | 0.000 |
+| avg_dist_wait      | 0.000 |
+| avg_query_reads    | OFF   |
+| avg_query_readkb   | OFF   |
+| avg_query_readtime | OFF   |
++--------------------+-------+
+29 rows in set (0.00 sec)</p>
+
+<h3>SET语句（设置服务端变量）语法</h3>
+
+<p>SET [GLOBAL] server_variable_name = value
+ SET [INDEX index_name] GLOBAL @user_variable_name = (int_val1 [, int_val2, ...])
+ SET NAMES value
+ SET @@dummy_variable = ignored_value
+貌似是设置一个全局变量
+没啥大用，随后翻译。</p>
+
+<h3>SHOW TABLES 语句</h3>
+
+<p>语句：SHOW TABLES [ LIKE pattern ]
+mysql> SHOW TABLES;
++-------+-------------+
+| Index | Type        |
++-------+-------------+
+| dist1 | distributed |
+| rt    | rt          |
+| test1 | local       |
+| test2 | local       |
++-------+-------------+
+4 rows in set (0.00 sec)</p>
+
+<p>DESCRIBE语句</p>
+
+<p>mysql> DESC rt;
++---------+---------+
+| Field   | Type    |
++---------+---------+
+| id      | integer |
+| title   | field   |
+| content | field   |
+| gid     | integer |
++---------+---------+
+4 rows in set (0.00 sec)</p>
+
+<h3>CREATE FUNCTION 语句</h3>
+
+<p>CREATE FUNCTION udf_name
+    RETURNS {INT | INTEGER | BIGINT | FLOAT | STRING}
+    SONAME 'udf_lib_file'
+CREATE FUNCTION statement, introduced in version 2.0.1-beta, installs a user-defined function (UDF) with the given name and type from the given library file. The library file must reside in a trusted plugin_dir directory. On success, the function is available for use in all subsequent queries that the server receives. Example:</p>
+
+<p>mysql> CREATE FUNCTION avgmva RETURNS INTEGER SONAME 'udfexample.dll';
+Query OK, 0 rows affected (0.03 sec)</p>
+
+<p>mysql> SELECT *, AVGMVA(tag) AS q from test1;
++------+--------+---------+-----------+
+| id   | weight | tag     | q         |
++------+--------+---------+-----------+
+|    1 |      1 | 1,3,5,7 | 4.000000  |
+|    2 |      1 | 2,4,6   | 4.000000  |
+|    3 |      1 | 15      | 15.000000 |
+|    4 |      1 | 7,40    | 23.500000 |
++------+--------+---------+-----------+</p>
+
+<h3>DROP FUNCTION 语句</h3>
+
+<p>DROP FUNCTION udf_name
+DROP FUNCTION statement, introduced in version 2.0.1-beta, deinstalls a user-defined function (UDF) with the given name. On success, the function is no longer available for use in subsequent queries. Pending concurrent queries will not be affected and the library unload, if necessary, will be postponed until those queries complete. Example:</p>
+
+<p>mysql> DROP FUNCTION avgmva;
+Query OK, 0 rows affected (0.00 sec)</p>
+
+<h3>Sphinx保留关键字</h3>
+
+<p>AND, AS, BY, DIV, FACET, FALSE, FROM, ID, IN, IS, LIMIT,
+MOD, NOT, NULL, OR, ORDER, SELECT, TRUE</p>
+
+<h3>Select"或"关系查询解决</h3>
+
+<p>select * from t_test_filter_sphinxSE 
+ where query="nick;select=IF( FUserId=34,1,0) + IF(Fshopid=1234567,10,0) as match_qq; filter= match_qq, 1,10,11";</p>
+
+<p>两个IF语句构成一个filter(filter是个二进制)，filter在1，10，11中，即或关系。</p>
+
+<p>select popularity_score,omg_score,periods_stisfy_rate
+ ,if((popularity_score>0 or img_score>1 or periods_satisfy_rate>0 or comment_num >1 or goods_on_shelf > 1388131559 or is_mlzz=0 or picture_auth_status=9),1,0) as or_filter 
+ where match(‘@shop_id s100843s’) and or_filter=1,show meta;</p>
+
+<p>大概400万数据，几毫秒即出结果。关键是shop_id匹配减少了筛选项。</p>
+
+<h3>表达式、函数以及操作</h3>
+
+<p>链接：http://sphinxsearch.com/docs/current.html#operators</p>
+
+<h4>操作：</h4>
+
+<p>Arithmetic operators: +, -, *, /, %, DIV, MOD
+Comparison operators: &lt;, > &lt;=, >=, =, &lt;>
+Boolean operators: AND, OR, NOT
+Bitwise operators: &amp;, |</p>
+
+<h4>数字函数</h4>
+
+<p>ABS()
+BITDOT()
+CEIL()
+CONTAINS()
+COS()
+DOUBLE()
+EXP()
+FIBONACCI()
+FLOOR()
+GEOPOLY2D()
+IDIV()
+LN()
+LOG10()
+LOG2()
+MAX()
+MIN()
+POLY2D()
+POW()
+SIN()
+SQRT()
+UINT()</p>
+
+<h4>日期和时间函数</h4>
+
+<p>DAY()
+Returns the integer day of month (in 1..31 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>MONTH()
+Returns the integer month (in 1..12 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>NOW()
+Returns the current timestamp as an INTEGER. Introduced in version 0.9.9-rc1.</p>
+
+<p>YEAR()
+Returns the integer year (in 1969..2038 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>YEARMONTH()
+Returns the integer year and month code (in 196912..203801 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>YEARMONTHDAY()
+Returns the integer year, month, and date code (in 19691231..20380119 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<h4>类型转换函数</h4>
+
+<p>BIGINT()</p>
+
+<p>INTEGER()</p>
+
+<p>SINT()</p>
+
+<h4>比较函数</h4>
+
+<p>IF()
+IF() behavior is slightly different that that of its MySQL counterpart. It takes 3 arguments, check whether the 1st argument is equal to 0.0, returns the 2nd argument if it is not zero, or the 3rd one when it is. Note that unlike comparison operators, IF() does not use a threshold! Therefore, it's safe to use comparison results as its 1st argument, but arithmetic operators might produce unexpected results. For instance, the following two calls will produce different results even though they are logically equivalent:
+IF ( sqrt(3)<em>sqrt(3)-3&lt;>0, a, b )
+IF ( sqrt(3)</em>sqrt(3)-3, a, b )
+In the first case, the comparison operator &lt;> will return 0.0 (false) because of a threshold, and IF() will always return 'b' as a result. In the second one, the same sqrt(3)*sqrt(3)-3 expression will be compared with zero without threshold by the IF() function itself. But its value will be slightly different from zero because of limited floating point calculations precision. Because of that, the comparison with 0.0 done by IF() will not pass, and the second variant will return 'a' as a result.</p>
+
+<p>IN()
+IN(expr,val1,val2,...), introduced in version 0.9.9-rc1, takes 2 or more arguments, and returns 1 if 1st argument (expr) is equal to any of the other arguments (val1..valN), or 0 otherwise. Currently, all the checked values (but not the expression itself!) are required to be constant. (Its technically possible to implement arbitrary expressions too, and that might be implemented in the future.) Constants are pre-sorted and then binary search is used, so IN() even against a big arbitrary list of constants will be very quick. Starting with 0.9.9-rc2, first argument can also be a MVA attribute. In that case, IN() will return 1 if any of the MVA values is equal to any of the other arguments. Starting with 2.0.1-beta, IN() also supports IN(expr,@uservar) syntax to check whether the value belongs to the list in the given global user variable. First argument can be JSON attribute since 2.2.1-beta.</p>
+
+<p>INTERVAL()
+INTERVAL(expr,point1,point2,point3,...), introduced in version 0.9.9-rc1, takes 2 or more arguments, and returns the index of the argument that is less than the first argument: it returns 0 if expr&lt;point1, 1 if point1&lt;=expr&lt;point2, and so on. It is required that point1&lt;point2&lt;...&lt;pointN for this function to work correctly.</p>
+
+<h4>其他函数</h4>
+
+<p>ALL()
+ANY()
+ATAN2()
+...</p>
+      
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

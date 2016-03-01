@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">SphinxQL</h1>
+          <h2 id="project_tagline">2016-03-1 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h3>表达式、函数以及操作</h3>
+
+<p>同时支持API和SphinxQL的形式 
+链接：http://sphinxsearch.com/docs/current.html#operators</p>
+
+<h4>操作：</h4>
+
+<p>Arithmetic operators: +, -, *, /, %, DIV, MOD 
+Comparison operators: &lt;, > &lt;=, >=, =, &lt;> 
+Boolean operators: AND, OR, NOT 
+Bitwise operators: &amp;, |</p>
+
+<h4>数字函数</h4>
+
+<p>ABS() 
+BITDOT() 
+CEIL() 
+CONTAINS() 
+COS() 
+DOUBLE() 
+EXP() 
+FIBONACCI() 
+FLOOR() 
+GEOPOLY2D() 
+IDIV() 
+LN() 
+LOG10() 
+LOG2() 
+MAX() 
+MIN() 
+POLY2D() 
+POW() 
+SIN() 
+SQRT() 
+UINT()</p>
+
+<h4>日期和时间函数</h4>
+
+<p>DAY() 
+Returns the integer day of month (in 1..31 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>MONTH() 
+Returns the integer month (in 1..12 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>NOW() 
+Returns the current timestamp as an INTEGER. Introduced in version 0.9.9-rc1.</p>
+
+<p>YEAR() 
+Returns the integer year (in 1969..2038 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>YEARMONTH() 
+Returns the integer year and month code (in 196912..203801 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<p>YEARMONTHDAY() 
+Returns the integer year, month, and date code (in 19691231..20380119 range) from a timestamp argument, according to the current timezone. Introduced in version 2.0.1-beta.</p>
+
+<h4>类型转换函数</h4>
+
+<p>BIGINT()
+INTEGER()
+SINT()</p>
+
+<h4>比较函数</h4>
+
+<p>IF() 
+IF() behavior is slightly different that that of its MySQL counterpart. It takes 3 arguments, check whether the 1st argument is equal to 0.0, returns the 2nd argument if it is not zero, or the 3rd one when it is. Note that unlike comparison operators, IF() does not use a threshold! Therefore, it’s safe to use comparison results as its 1st argument, but arithmetic operators might produce unexpected results. For instance, the following two calls will produce different results even though they are logically equivalent: 
+IF ( sqrt(3)<em>sqrt(3)-3&lt;>0, a, b ) 
+IF ( sqrt(3)</em>sqrt(3)-3, a, b ) 
+In the first case, the comparison operator &lt;> will return 0.0 (false) because of a threshold, and IF() will always return ‘b’ as a result. In the second one, the same sqrt(3)*sqrt(3)-3 expression will be compared with zero without threshold by the IF() function itself. But its value will be slightly different from zero because of limited floating point calculations precision. Because of that, the comparison with 0.0 done by IF() will not pass, and the second variant will return ‘a’ as a result.</p>
+
+<p>IN() 
+IN(expr,val1,val2,…), introduced in version 0.9.9-rc1, takes 2 or more arguments, and returns 1 if 1st argument (expr) is equal to any of the other arguments (val1..valN), or 0 otherwise. Currently, all the checked values (but not the expression itself!) are required to be constant. (Its technically possible to implement arbitrary expressions too, and that might be implemented in the future.) Constants are pre-sorted and then binary search is used, so IN() even against a big arbitrary list of constants will be very quick. Starting with 0.9.9-rc2, first argument can also be a MVA attribute. In that case, IN() will return 1 if any of the MVA values is equal to any of the other arguments. Starting with 2.0.1-beta, IN() also supports IN(expr,@uservar) syntax to check whether the value belongs to the list in the given global user variable. First argument can be JSON attribute since 2.2.1-beta.</p>
+
+<p>INTERVAL() 
+INTERVAL(expr,point1,point2,point3,…), introduced in version 0.9.9-rc1, takes 2 or more arguments, and returns the index of the argument that is less than the first argument: it returns 0 if expr</p>
+
+<h4>其他函数</h4>
+
+<p>ALL() 
+ANY() 
+ATAN2() 
+…</p>
+
+<h3>查询API：</h3>
+
+<h4>SetLimits</h4>
+
+<p>函数: function SetLimits ( $offset, $limit, $max_matches=1000, $cutoff=0 )</p>
+
+<p>Sets offset into server-side result set ($offset) and amount of matches to return to client starting from that offset ($limit). Can additionally control maximum server-side result set size for current query ($max_matches) and the threshold amount of matches to stop searching at ($cutoff). All parameters must be non-negative integers.</p>
+
+<p>First two parameters to SetLimits() are identical in behavior to MySQL LIMIT clause. They instruct searchd to return at most $limit matches starting from match number $offset. The default offset and limit settings are 0 and 20, that is, to return first 20 matches.</p>
+
+<p>max_matches setting controls how much matches searchd will keep in RAM while searching. All matching documents will be normally processed, ranked, filtered, and sorted even if max_matches is set to 1. But only best N documents are stored in memory at any given moment for performance and RAM usage reasons, and this setting controls that N. Note that there are two places where max_matches limit is enforced. Per-query limit is controlled by this API call, but there also is per-server limit controlled by max_matches setting in the config file. To prevent RAM usage abuse, server will not allow to set per-query limit higher than the per-server limit.</p>
+
+<p>You can't retrieve more than max_matches matches to the client application. The default limit is set to 1000. Normally, you must not have to go over this limit. One thousand records is enough to present to the end user. And if you're thinking about pulling the results to application for further sorting or filtering, that would be much more efficient if performed on Sphinx side.</p>
+
+<p>$cutoff setting is intended for advanced performance control. It tells searchd to forcibly stop search query once $cutoff matches had been found and processed.</p>
+
+<h4>SetMaxQueryTime</h4>
+
+<p>Prototype: function SetMaxQueryTime ( $max_query_time )</p>
+
+<p>Sets maximum search query time, in milliseconds. Parameter must be a non-negative integer. Default value is 0 which means "do not limit".</p>
+
+<p>Similar to $cutoff setting from SetLimits(), but limits elapsed query time instead of processed matches count. Local search queries will be stopped once that much time has elapsed. Note that if you're performing a search which queries several local indexes, this limit applies to each index separately.</p>
+
+<h4>SetSelect</h4>
+
+<p>Prototype: function SetSelect ( $clause )</p>
+
+<p>设置选择子句，展示需要拉取的字段，以及表达式。句式模仿SQL。</p>
+
+<p>计算表达式和字段一样，能用在排序(sorting)，过滤以及分组上。
+0.99以后，在有group的子句中，(AVG(), MIN(), MAX(), SUM())函数能够被使用。</p>
+
+<p>Example:</p>
+
+<p>$cl->SetSelect ( "*, @weight+(user_karma+ln(pageviews))<em>0.1 AS myweight" );
+ $cl->SetSelect ( "exp_years, salary_gbp</em>{$gbp_usd_rate} AS salary_usd,IF(age>40,1,0) AS over40" );
+ $cl->SetSelect ( "*, AVG(price) AS avgprice" );</p>
+
+<h3>结果集过滤器设置</h3>
+
+<h4>SetIDRange</h4>
+
+<p>函数: function SetIDRange ( $min, $max )
+设置一个ID的区间，参数必须是整数，默认0-0，即无限制。
+设置该参数之后，只有该区间内的东西会被选出来。</p>
+
+<h4>SetFilter</h4>
+
+<p>函数: function SetFilter ( $attribute, $values, $exclude=false )
+即attribute (exclude?in:not in) values</p>
+
+<h4>SetFilterRange</h4>
+
+<p>函数: function SetFilterRange ( $attribute, $min, $max, $exclude=false )
+设置属性的区间过滤</p>
+
+<h4>SetFilterFloatRange</h4>
+
+<p>函数: function SetFilterFloatRange ( $attribute, $min, $max, $exclude=false )</p>
+
+<h4>SetFilterString</h4>
+
+<p>函数: function SetFilterString ( $attribute, $value, $exclude=false )
+String的过滤器。</p>
+
+<p>On this call, additional new filter is added to the existing list of filters. $attribute must be a string with attribute name. $value must be a string. $exclude must be a boolean value; it controls whether to accept the matching documents (default mode, when $exclude is false) or reject them.</p>
+
+<p>Only those documents where $attribute column value stored in the index matches string value from $value will be matched (or rejected, if $exclude is true).</p>
+      
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>
