@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">Pthreads安装&使用</h1>
+          <h2 id="project_tagline">2016-03-14 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <p>
+    <!--?xml version="1.0" encoding="UTF-8" standalone="no"?-->
+</p>
+<p>
+    下载pthreads：<a href="http://pecl.php.net/package/pthreads">http://pecl.php.net/package/pthreads</a>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3.0以上必须要PHP7，暂时没安装7，所以，先下载了一个2.0.10。
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 出错：checking checking for ZTS... configure: error: pthreads requires ZTS, please re-compile PHP with ZTS enabled
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 问题，官网有解释：<a href="http://php.net/manual/zh/pthreads.requirements.php">http://php.net/manual/zh/pthreads.requirements.php</a>
+</p>
+<p>
+    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="background-color: rgb(255, 250, 165);-evernote-highlight:true;">需要在PHP编译阶段设置—enable-maintainer-zts属性</span>
+<p>
+    看来只能重新安装PHP7了。GG
+</p>
+</p>
+<p><br>
+    <h3>编译PHP7：</h3>
+</p>
+<p>
+    下载：<a href="http://www.php.net/downloads.php">http://www.php.net/downloads.php</a>
+</p>
+<p>
+    解压：<span style="font-size: 12px;"><span style="font-family: &#39;Andale Mono&#39;;"><span style="background-color: rgb(0, 0, 0);"><span style="color: rgb(41, 249, 20);">tar&nbsp;zvxf&nbsp;php-7.0.4.tar.gz</span></span></span></span>
+</p>
+<p>
+    <span style="background-color: rgb(0, 0, 0);"><span style="color:#29F914;font-family:Andale Mono;font-size:12px">tar&nbsp;zvxf&nbsp;php-7.0.4.tar.gz(./configure&nbsp;—prefix=/Users/Shine/Coding/service/php&nbsp;—enable-maintainer-its&nbsp;—with-iconv=/usr&nbsp;—enable-fpm&nbsp;—enable-sockets&nbsp;—enable-pcntl&nbsp;—enable-zip -with-pcre-regex&nbsp;—with-curl&nbsp;—with-config-file-path=/Users/Shine/Coding/service/php/etc &amp;&amp; make &amp;&amp; make test &amp;&amp; make install)|tee -a ../install_php.back</span></span>
+</p>
+<p>
+    <br>
+    <h3>安装问题：</h3>
+</p>
+<p>
+    期间报错：zlib目录无法找到，之前用brew安装过，直接指定路径了：—with-zlib-dir=/usr/local/zlib
+</p>
+<p>
+    期间报错：<span style="font-family: tahoma, arial, 宋体; background-color: rgb(255, 255, 255);">Configure: error: Please reinstall the BZip2 distribution 直接：brew</span> <span style="font-family: tahoma, arial, 宋体; background-color: rgb(255, 255, 255);">install bzip2。--with-bz2-dir=/usr/local/Cellar/bzip2/1.0.6_1/</span>
+</p>
+<p>
+    libiconv问题：
+</p>
+<p>
+    <span style="color: rgb(57, 51, 24);"><code style="padding: 0px; border: 0px; font-size: 13px; font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px; color: rgb(43, 145, 175);">Undefined</span><span style="padding: 0px; border: 0px; color: black;">&nbsp;symbols&nbsp;</span><span style="padding: 0px; border: 0px; color: rgb(0, 0, 139);">for</span><span style="padding: 0px; border: 0px; color: black;">&nbsp;architecture&nbsp;x86_64</span><span style="padding: 0px; border: 0px; color: black;">:</span></code></span><br>
+    <span style="color: rgb(57, 51, 24);"><span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="color: black;">&nbsp;</span> <span style="padding: 0px; border: 0px; color: maroon;">&quot;_libiconv&quot;</span><span style="padding: 0px; border: 0px; color: black;">,</span><span style="padding: 0px; border: 0px; color: black;">&nbsp;referenced&nbsp;from</span><span style="padding: 0px; border: 0px; color: black;">:</span></span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _do_convert in gdkanji</span><span style="padding: 0px; border: 0px;">.</span><span style="padding: 0px; border: 0px;">a</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _zif_iconv_substr in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _zif_iconv_mime in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_strlen in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_strpos in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_appendl in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;">&nbsp; &nbsp; &nbsp;...</span></span>
+<br>
+    <span style="color: rgb(57, 51, 24);"><code style="padding: 0px; border: 0px; font-size: 13px; font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px; color: black;">&nbsp;</span> <span style="padding: 0px; border: 0px; color: maroon;">&quot;_libiconv_close&quot;</span><span style="padding: 0px; border: 0px; color: black;">,</span><span style="padding: 0px; border: 0px; color: black;">&nbsp;referenced&nbsp;from</span><span style="padding: 0px; border: 0px; color: black;">:</span></code></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _do_convert in gdkanji</span><span style="padding: 0px; border: 0px;">.</span><span style="padding: 0px; border: 0px;">a</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _zif_iconv_substr in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _zif_iconv_mime in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_strlen in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_strpos in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_appendl in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;">&nbsp; &nbsp; &nbsp;...</span></span>
+<br>
+    <span style="color: rgb(57, 51, 24);"><code style="padding: 0px; border: 0px; font-size: 13px; font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px; color: black;">&nbsp;</span> <span style="padding: 0px; border: 0px; color: maroon;">&quot;_libiconv_open&quot;</span><span style="padding: 0px; border: 0px; color: black;">,</span><span style="padding: 0px; border: 0px; color: black;">&nbsp;referenced&nbsp;from</span><span style="padding: 0px; border: 0px; color: black;">:</span></code></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _do_convert in gdkanji</span><span style="padding: 0px; border: 0px;">.</span><span style="padding: 0px; border: 0px;">a</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _zif_iconv_substr in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _zif_iconv_mime in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_strlen in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_strpos in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;"><span style="padding: 0px; border: 0px;">&nbsp; &nbsp; _php_iconv_mime_decode in iconv.o</span></span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;">&nbsp; &nbsp; &nbsp;...</span></span>
+<br>
+<span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;">
+    id:symbol(s) not found for architecture x86_64</span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;">clang:error:linker command failed with exit code 1 (use -v to see invocation)</span></span>
+<br>
+    <span style="font-size: 13px;"><span style="font-family: Consolas, Menlo, Monaco, &#39;Lucida Console&#39;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Vera Sans Mono&#39;, &#39;Courier New&#39;, monospace, sans-serif;">make: ***[sapi/cli/php] Error 1</span></span>
+
+<p>
+    symbol “libiconv&quot;无法找到，找了很多地方都没有找到问题。最后看了<a href="http://superuser.com/questions/394219/compiling-php-on-os-x-iconv-works-only-if-forced-to-64-bit">http://superuser.com/questions/394219/compiling-php-on-os-x-iconv-works-only-if-forced-to-64-bit</a>这篇链接，知道了原因是GCC编译的时候，优先扫描的/usr/local/目录下的库，而这个不是默认的库。
+</p>
+<p>
+    系统自带的iconv与后来安装的iconv在symbol的定义上存在区别。然后再看了<a href="http://superuser.com/questions/394219/compiling-php-on-os-x-iconv-works-only-if-forced-to-64-bit">http://superuser.com/questions/394219/compiling-php-on-os-x-iconv-works-only-if-forced-to-64-bit</a>，找到方法。
+</p>
+
+    <img style="height: auto;" src="../images/pthreads_01.jpg" data-en-img-selected="true"/>
+<br>
+    就是将/usr/local/lib/libiconv下的库文件，屏蔽掉。
+<br>
+    mv /usr/local/lib/libiconv.2.4.0.dylib /usr/local/lib/libiconv1.2.4.0.dylib
+<br>
+    mv /usr/local/lib/libiconv.2.dylib /usr/local/lib/libiconv1.2.dylib
+<br>
+    mv /usr/local/lib/libiconv.dylib /usr/local/lib/libiconv1.dylib
+<br>
+    mv /usr/local/lib/libiconv.la /usr/local/lib/libiconv1.la
+<br>
+    mv /usr/local/include/iconv.h /usr/local/include/iconv1.h（关键是这个）
+<br>
+    然后再重新configure &amp;&amp; make &amp;&amp; make test &amp;&amp; make install。
+<br>
+    完成啦~@@！！
+<br>
+    <img style="height: auto;" src="../images/pthreads_02.jpg" data-en-img-selected="true"/>
+
+<p><br><h3>Pthreads安装：</h3>
+</p>
+<p>
+    下载pthread：<a href="http://pecl.php.net/package/pthreads">http://pecl.php.net/package/pthreads</a>
+</p>
+<p>
+    下载的最新的3.1.6：
+</p>
+<p>
+    <span style="font-size: 12px;"><span style="font-family: &#39;Andale Mono&#39;;"><span style="background-color: rgb(0, 0, 0);"><span style="color: rgb(41, 249, 20);">tar&nbsp;zvxf pthreads-3.1.6.tar.gz</span></span></span></span>
+</p>
+<p>
+    <span style="font-size: 12px;"><span style="font-family: &#39;Andale Mono&#39;;"><span style="background-color: rgb(0, 0, 0);"><span style="color: rgb(41, 249, 20);">cd pthreads-3.1.6</span></span></span></span>
+</p>
+<p>
+    <span style="font-size: 12px;"><span style="font-family: &#39;Andale Mono&#39;;"><span style="background-color: rgb(0, 0, 0);"><span style="color: rgb(41, 249, 20);">sudo</span></span></span></span> <span style="background-color: rgb(0, 0, 0);"><span style="color:#29F914;font-family:Andale Mono;font-size:12px">/User/Shine/Coding/service/php/bin</span></span><span style="font-size: 12px;"><span style="font-family: &#39;Andale Mono&#39;;"><span style="background-color: rgb(0, 0, 0);"><span style="color: rgb(41, 249, 20);">/phpize</span></span></span></span>
+</p>
+<p>
+    <span style="background-color: rgb(0, 0, 0);"><span style="color:#29F914;font-family:Andale Mono;font-size:12px">../configure&nbsp;—whith-php-config=/User/Shine/Coding/service/php/bin/php-config</span></span>
+</p>
+<p>
+    <span style="background-color: rgb(0, 0, 0);"><span style="color:#29F914;font-family:Andale Mono;font-size:12px">make &amp;&amp; make install</span></span>
+</p>
+<p>
+    <img style="height: auto;" src="../images/pthreads_03.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    <span style="background-color: rgb(0, 0, 0);"><span style="color:#29F914;font-family:Andale Mono;font-size:12px">vi</span></span> <span style="background-color: rgb(0, 0, 0);"><span style="color:#29F914;font-family:Andale Mono;font-size:12px">/User/Shine/Coding/service/php/etc/php.ini</span></span><span style="font-size: 13px;"><span style="font-family: verdana, sans-serif, 宋体;"><span style="color: rgb(51, 51, 51);">，添加 extension=pthreads.so</span></span></span>
+</p>
+<p>
+    经过测试，正常！
+</p>
+<p><br><h3>Pthreads开发问题：</h3>
+</p>
+<p>
+    下面就是开始写代码啦！
+</p>
+<p>
+    pthread的github地址：<a href="https://github.com/krakjoe/pthreads">https://github.com/krakjoe/pthreads</a>
+</p>
+<p>
+    注意：pthreads中，线程调用无法不能使用数组！！！
+</p>
+<p>
+    错误：Uncaught RuntimeException: pthreads detected an attempt to connect to an object which has already been destroyed
+</p>
+<p>
+    原因：<a href="http://stackoverflow.com/questions/14796674/a-php-pthreads-thread-class-cant-use-array">http://stackoverflow.com/questions/14796674/a-php-pthreads-thread-class-cant-use-array</a>
+</p>
+<p>
+    可以使用一个提供的对象：Threaded（其也是线程安全的）
+</p>
+<p>
+    当然也可以强制使用：强制类型转换（array）
+</p>
+<p>
+    在线程之间切换的时候，array会被转换成Volatile类。
+</p>
+<p>
+    <img style="height: auto;" src="../images/pthreads_04.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    错误：class not found
+</p>
+<p>
+    原因：<a href="https://github.com/krakjoe/pthreads/issues/68">https://github.com/krakjoe/pthreads/issues/68</a>
+</p>
+<p>
+    线程中的autoload需要重新指定autoload。
+</p>
+<p>
+    解决：在线程开始前，获取主线程中的autoload函数，然后子线程中，重新对这些函数进行spl_autoload_register即可解决。
+</p>
+<p><br>
+    <h3>应用：</h3>
+</p>
+<p>
+    faster_curl(异步非阻塞http请求模块)：<a href="https://github.com/Shineyel/faster_curl">https://github.com/Shineyel/faster_curl</a>
+</p>
+
+<p>
+    测试：curl和multi curl和pthreads curl的区别
+</p>
+<p>
+    <img style="height: auto;" src="../images/pthreads_05.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    有时候，pthread多线程模式下，速度更快！
+</p>
+<p>
+    <img style="height: auto;" src="../images/pthreads_06.jpg" data-en-img-selected="true"/>
+</p>
+<p>
+    可见，使用多线程可以明显减少时间。
+</p>
+<p>
+    <br/>
+</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>
