@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Shineyel.GitHub.io : tagline">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="../stylesheets/stylesheet.css">
+
+    <title>Shine's blog</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+      <div class="div-left"><a id="back_banner" href="../index.html">Back</a></div>
+      <center>
+        <header class="inner">
+          <h1 id="project_title">利用Cron自动更新代码</h1>
+          <h2 id="project_tagline">2016-03-20 更新</h2>
+        </header>
+      </center>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+    利用cront自动更新代码
+</h1>
+<p>
+    原因：公司使用SVN存储代码，经常看代码之前忘记更新。遂想办法，让代码定时自动更新。
+</p>
+<p>
+    定时更新，首先想到的就是使用<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">crontab</code>+<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">svn up</code>。
+</p>
+<p">
+    但是由于代码比较多，而且处于不同目录或者自己更改了目录结构，且<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">SVN</code>无法进行递归，除非每个代码目录都写一个<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">cron</code>，但是，在<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">crontab</code>调用<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">SVN</code>命令时，无法获得授权。必须指定<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">user</code>和<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">pwd</code>。感觉放在<code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">crontab</code>中不太合适。
+</p>
+<p>
+    于是重新写了个脚本。用来定时更新(svn_up.sh)：
+</p>
+<pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;">#!/bin/bash
+#递归调用函数：更新当前目录
+function up_path(){
+    #判断当前是否有.svn目录，若有更新当前目录
+    if [ -d "$1/.svn" ]; then
+      #crontab需要指定账号密码,-no-auth-cache即不要保存用户信息
+      svn up --username username --password password --no-auth-cache $1;
+      echo "--------------------------------"
+    else
+      #获取绝对路径,排除当前目录(以/结尾),排除包含/.的目录(不是代码,如/.svn)
+      #find /codepath/ -maxdepth 1 | grep -v "[\/]$" | grep -v "\/\."
+      dir_list=$(find $1 -maxdepth 1 | grep -v "[\/]$" | grep -v "\/\.")
+      for i in $dir_list; do
+        if [ $1 = $i ]; then
+          continue
+        elif [ -d $i ]; then
+          #若当前目录不是svn目录，则递归更新
+          up_path $i;
+        fi
+      done
+    fi
+}
+#使用参数调用
+up_path $1;</pre>
+<p>
+    <code style="-webkit-print-color-adjust: exact; margin: 0px 2px; padding: 0px 5px; white-space: nowrap; border: 1px solid rgb(234, 234, 234); background-color: rgb(248, 248, 248); border-top-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; border-bottom-left-radius: 3px;">crontab</code>调用如下：
+</p>
+<pre style="-webkit-print-color-adjust: exact; margin-top: 15px; margin-bottom: 15px; border: 1px solid rgb(204, 204, 204); font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px;">#周一到周五，10点到20点，每30分钟调用一次。代码目录作为参数
+*/30 10-20 * * 1-5 sh svn_up.sh /codepath/ &amp;&gt; /tmp/test.log</pre>
+<p>
+    <br/>
+</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published by <a href="https://github.com/Shineyel">Shine</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>
